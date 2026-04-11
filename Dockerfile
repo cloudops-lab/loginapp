@@ -1,7 +1,7 @@
-FROM tomcat:8
-#Take the war file and copy to webapps of tomcat 
-USER root
-#CMD microdnf install vim
-#CMD  sudo yum update -y
-#CMD yum install docker -y
-#COPY target/*.war /usr/local/tomcat/webapps
+FROM tomcat:9-jdk11-openjdk
+
+RUN rm -rf /usr/local/tomcat/webapps/*
+
+COPY target/*.war /usr/local/tomcat/webapps/
+
+EXPOSE 8080
