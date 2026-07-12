@@ -1,1 +1,58 @@
+name: Java CI Pipeline
 
+on:
+  push:
+    branches:
+      - master
+      - develop
+  pull_request:
+    branches:
+      - master
+      - develop
+  workflow_dispatch:
+
+jobs:
+  build:
+
+    runs-on: [self-hosted, Linux, X64, dev]
+
+    steps:
+
+      - name: Checkout Source
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '8'
+          cache: maven
+
+      - name: Setup Maven
+        uses: stCarolas/setup-maven@v5
+        with:
+          maven-version: 3.9.9
+
+      - name: Verify Maven
+        run: |
+          java -version
+          mvn -version
+
+      - name: Clean Project
+        run: mvn clean
+
+      - name: Compile
+        run: mvn compile
+
+      - name: Run Unit Tests
+        run: mvn test
+
+      - name: Package Application
+        run: mvn package -DskipTests
+
+      - name: Upload JAR Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: loginapp-${{ github.run_number }}
+          path: target/*.jar
+          retention-days: 7
